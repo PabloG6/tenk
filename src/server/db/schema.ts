@@ -25,7 +25,7 @@ export const tasks = createTable(
   {
     id: serial("id").primaryKey(),
     name: varchar("name", { length: 256 }).notNull(),
-    total_hours: bigint("total_hours", {mode: 'bigint'}),
+    totalHours: bigint("total_hours", {mode: 'number'}).notNull().default(0),
     description: varchar("description", {length: 256}).notNull(),
     createdAt: timestamp("created_at", { withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
@@ -51,6 +51,8 @@ export const logs = createTable(
     endTime: timestamp("end_time"),
   },
 )
+
+export type DbSelectTasks = typeof tasks.$inferSelect;
 
 
 export type DbLogs = typeof logs.$inferSelect;

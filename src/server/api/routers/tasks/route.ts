@@ -23,6 +23,7 @@ export const tasksRouter = createTRPCRouter({
 
     return {
       name: results?.name,
+      totalHours: results?.totalHours,
       id: results?.id,
       description: results?.description,
       createdAt: results?.createdAt,

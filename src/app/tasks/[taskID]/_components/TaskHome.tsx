@@ -63,6 +63,9 @@ export default function TaskHome() {
         dismissible: true,
         duration: 3_000,
       });
+
+      void utils.tasks.getByID.invalidate();
+
     },
   });
 
@@ -70,8 +73,9 @@ export default function TaskHome() {
     const startStopCurrentEntry = (e: KeyboardEvent) => {
       if (e.key == "¬") {
         const date = new Date();
-        if (currentLog !== null && currentLog?.endTime == null) {
-          updateLog.mutate({ id: currentLog.id, time: date });
+        console.log(currentLog)
+        if (!currentLog?.endTime) {
+          updateLog.mutate({ id: currentLog!.id, time: date });
         } else {
           createLog.mutate({ startTime: date, taskID: id });
         }
@@ -110,15 +114,7 @@ export default function TaskHome() {
 
   useEffect(() => {
     setShouldShowActiveTimer(() => {
-      console.log(query);
-      const value =
-        !(query.isFetching || query.isLoading) && currentLog == null;
-      console.log(
-        "should show active timer",
-        query.isFetching,
-        query.isLoading,
-        currentLog == null,
-      );
+  
       return !(query.isFetching || query.isLoading) && currentLog == null;
     });
   }, [currentLog]);
@@ -143,21 +139,25 @@ export default function TaskHome() {
               <span className="text-sm text-muted-foreground">
                 You have no active timers.
               </span>
-              <div className="flex items-center justify-center gap-1.5">
-                <CommandShortcut>
-                  &#8997; + <kbd className="text-xs">L</kbd>
-                </CommandShortcut>
-                <p className="text-muted-foreground">
-                  Start/Stop current entry.
-                </p>
-              </div>
+              {task.logs.length > 0 && (
+                <>
+                  <div className="flex items-center justify-center gap-1.5">
+                    <CommandShortcut>
+                      &#8997; + <kbd className="text-xs">L</kbd>
+                    </CommandShortcut>
+                    <p className="text-muted-foreground">
+                      Start/Stop current entry.
+                    </p>
+                  </div>
 
-              <div className="flex items-center justify-center gap-1.5">
-                <CommandShortcut>
-                  &#8997; + <kbd className="text-xs">H</kbd>
-                </CommandShortcut>
-                <p className="text-muted-foreground">Go to Home.</p>
-              </div>
+                  <div className="flex items-center justify-center gap-1.5">
+                    <CommandShortcut>
+                      &#8997; + <kbd className="text-xs">H</kbd>
+                    </CommandShortcut>
+                    <p className="text-muted-foreground">Go to Home.</p>
+                  </div>
+                </>
+              )}
             </div>
           ) : (
             <Skeleton className="h-4 w-40"></Skeleton>
@@ -170,7 +170,7 @@ export default function TaskHome() {
             <DataTable columns={logColumns} data={task.logs} />
           </div>
         ) : (
-          <div className="flex h-full w-full flex-col items-center justify-center pb-16">
+          <div className="flex h-full w-full flex-col items-center  pb-16">
             <EmptyContent></EmptyContent>
           </div>
         )}

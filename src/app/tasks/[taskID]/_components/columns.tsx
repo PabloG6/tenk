@@ -3,6 +3,7 @@
 import { Checkbox } from "@/components/ui/checkbox";
 import type { SelectLogType } from "@/server/api/routers/logs/types";
 import type { SelectTaskType } from "@/server/api/routers/tasks/types";
+import { DbSelectTasks } from "@/server/db/schema";
 import type { ColumnDef } from "@tanstack/react-table";
 import { formatDistanceStrict } from "date-fns";
 // This type is used to define the shape of our data.
@@ -110,7 +111,7 @@ export const logColumns: ColumnDef<SelectLogType>[] = [
 ];
 
 
-export const taskColumns: ColumnDef<SelectTaskType>[] = [
+export const taskColumns: ColumnDef<DbSelectTasks>[] = [
     {
       id: "select",
       meta: {
@@ -165,7 +166,7 @@ export const taskColumns: ColumnDef<SelectTaskType>[] = [
           day: "numeric",
         });
   
-        const formattedDate = formatter.format(row.original.createdAt!);
+        const formattedDate = formatter.format(row.original.createdAt);
         return <>{formattedDate}</>;
       },
     },
@@ -179,8 +180,15 @@ export const taskColumns: ColumnDef<SelectTaskType>[] = [
     {
       accessorKey: "hoursCompleted",
       header: "Hours Completed",
-      cell: ({  }) => {
-        return <>4 hrs</>;
+      cell: ({ row }) => {
+        let seconds = row.original.totalHours;
+        const hours = Math.floor(seconds / 3600); // Get total hours
+        seconds %= 3600; // Remaining seconds after extracting hours
+        const minutes = Math.floor(seconds / 60); // Get minutes
+        const remainingSeconds = seconds % 60; // Remaining seconds
+      
+
+        return <>{`${hours}hrs ${minutes} mins ${remainingSeconds}ss`}</>;
       },
     },
   ];
